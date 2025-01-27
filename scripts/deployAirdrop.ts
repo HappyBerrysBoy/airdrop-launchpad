@@ -74,54 +74,54 @@ async function main() {
    * write contract 호출시 여기 아래부터 주석
    */
 
-  // const airdropData = await airdrop.getAllAirdropData();
-  // console.log(`Airdrop All Data: ${airdropData}`);
+  const airdropData = await airdrop.getAllAirdropData();
+  console.log(`Airdrop All Data: ${airdropData}`);
 
-  // const isAirdropStarted = await airdrop.isStarted();
-  // console.log(`Airdrop started: ${isAirdropStarted}`);
+  const isAirdropStarted = await airdrop.isStarted();
+  console.log(`Airdrop started: ${isAirdropStarted}`);
 
-  // const isAirdropEnded = await airdrop.isEnded();
-  // console.log(`Airdrop ended: ${isAirdropEnded}`);
+  const isAirdropEnded = await airdrop.isEnded();
+  console.log(`Airdrop ended: ${isAirdropEnded}`);
 
-  // const airdropStart = await airdrop.startTimestamp();
-  // console.log(
-  //   `Airdrop start: ${new Date(
-  //     Number(airdropStart) * 1000
-  //   ).toLocaleString()}(${airdropStart})`
-  // );
+  const airdropStart = await airdrop.startTimestamp();
+  console.log(
+    `Airdrop start: ${new Date(
+      Number(airdropStart) * 1000
+    ).toLocaleString()}(${airdropStart})`
+  );
 
-  // const airdropEnd = await airdrop.endTimestamp();
-  // console.log(
-  //   `Airdrop end: ${new Date(
-  //     Number(airdropEnd) * 1000
-  //   ).toLocaleString()}(${airdropEnd})`
-  // );
+  const airdropEnd = await airdrop.endTimestamp();
+  console.log(
+    `Airdrop end: ${new Date(
+      Number(airdropEnd) * 1000
+    ).toLocaleString()}(${airdropEnd})`
+  );
 
-  // const airdropTgePercent = await airdrop.tgePercent();
-  // console.log(`Airdrop tge percent: ${airdropTgePercent}`);
+  const airdropTgePercent = await airdrop.tgePercent();
+  console.log(`Airdrop tge percent: ${airdropTgePercent}`);
 
-  // const airdropVestingCount = await airdrop.vestingCount();
-  // console.log(`Airdrop vesting count: ${airdropVestingCount}`);
+  const airdropVestingCount = await airdrop.vestingCount();
+  console.log(`Airdrop vesting count: ${airdropVestingCount}`);
 
-  // const airdropVestingTerm = await airdrop.vestingTerm();
-  // console.log(`Airdrop vesting term: ${airdropVestingTerm}`);
+  const airdropVestingTerm = await airdrop.vestingTerm();
+  console.log(`Airdrop vesting term: ${airdropVestingTerm}`);
 
-  // const airdropAddressLength = await airdrop.dataLength();
-  // console.log(`Airdrop address length: ${airdropAddressLength}`);
+  const airdropAddressLength = await airdrop.dataLength();
+  console.log(`Airdrop address length: ${airdropAddressLength}`);
 
-  // const PRECISION = await airdrop.PRECISION();
-  // console.log(`Airdrop precision: ${PRECISION}`);
+  const PRECISION = await airdrop.PRECISION();
+  console.log(`Airdrop precision: ${PRECISION}`);
 
-  // /**
-  //  * Get fully claimed accounts
-  //  */
-  // console.log();
-  // console.log("Get fully claimed accounts");
-  // const fullyClaimedAccounts =
-  //   (await airdrop.getFullyClaimedAccounts()) as unknown as AirdropData[];
-  // fullyClaimedAccounts.forEach((data, index) => {
-  //   console.log(`Account ${index + 1}: ${data}`);
-  // });
+  /**
+   * Get fully claimed accounts
+   */
+  console.log();
+  console.log("Get fully claimed accounts");
+  const fullyClaimedAccounts =
+    (await airdrop.getFullyClaimedAccounts()) as unknown as AirdropData[];
+  fullyClaimedAccounts.forEach((data, index) => {
+    console.log(`Account ${index + 1}: ${data}`);
+  });
 
   console.log("++++++++++++++++ Write Contract +++++++++++++++++");
 
@@ -148,14 +148,14 @@ async function main() {
   /**
    * updateEndTimestamp
    */
-  // const newEndTimestamp = Math.floor(
-  //   new Date().setMinutes(now.getMinutes() + 12) / 1000
-  // );
-  // console.log(`New end timestamp: ${newEndTimestamp}`);
-  // const updateEndTimestampResult = await airdrop.updateEndTimestamp(
-  //   newEndTimestamp
-  // );
-  // console.log(`Update end timestamp result: ${updateEndTimestampResult.hash}`);
+  const newEndTimestamp = Math.floor(
+    new Date().setMinutes(now.getMinutes() + 12) / 1000
+  );
+  console.log(`New end timestamp: ${newEndTimestamp}`);
+  const updateEndTimestampResult = await airdrop.updateEndTimestamp(
+    newEndTimestamp
+  );
+  console.log(`Update end timestamp result: ${updateEndTimestampResult.hash}`);
 
   /**
    * Collect airdrop token

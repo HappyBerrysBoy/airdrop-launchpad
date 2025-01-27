@@ -1,6 +1,20 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "dotenv/config";
+// import "@nomiclabs/hardhat-ethers";
+// import "@nomiclabs/hardhat-etherscan";
+// import "@nomiclabs/hardhat-waffle";
+// import "@openzeppelin/hardhat-upgrades";
+// import "@typechain/hardhat";
+// import "hardhat-abi-exporter";
+// import "hardhat-contract-sizer";
+// import "solidity-coverage";
+// import "solidity-docgen";
+
+require("dotenv").config();
+require("./tasks/01-airdrop-factory");
+require("./tasks/02-airdrop-contract");
+require("./tasks/03-airdrop-user");
 
 const {
   ETHERSCAN_KEY,

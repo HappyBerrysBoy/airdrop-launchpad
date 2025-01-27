@@ -33,15 +33,6 @@ async function main() {
   );
   console.log(`Token contract: ${tokenContract.target}`);
 
-  // Deployer account info
-  const deployer = await ethers.getSigner(airdropReceiver);
-  console.log(`Deploying contracts with the account: ${deployer.address}`);
-  console.log(
-    `Account balance: ${ethers.formatEther(
-      await deployer.provider.getBalance(deployer.address)
-    )}`
-  );
-
   const airdropFactory = await ethers.getContractAt(
     "AirdropFactory",
     airdropFactoryAddress
@@ -173,13 +164,13 @@ async function main() {
   /**
    * Claim airdrop
    */
-  // const airdropClaimTestAccount = await ethers.getSigner(airdropReceiver);
-  // console.log(`Airdrop claim test account: ${airdropClaimTestAccount.address}`);
+  const airdropClaimTestAccount = await ethers.getSigner(airdropReceiver);
+  console.log(`Airdrop claim test account: ${airdropClaimTestAccount.address}`);
 
-  // console.log();
-  // console.log("start airdrop claim");
-  // const claimResult = await airdrop.connect(airdropClaimTestAccount).claim();
-  // console.log(`Claim airdrop result: ${claimResult.hash}`);
+  console.log();
+  console.log("start airdrop claim");
+  const claimResult = await airdrop.connect(airdropClaimTestAccount).claim();
+  console.log(`Claim airdrop result: ${claimResult.hash}`);
 
   /**
    * Insert airdrop data
