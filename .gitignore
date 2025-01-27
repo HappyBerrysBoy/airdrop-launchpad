@@ -1,0 +1,10 @@
+# for nodejs
+node_modules
+yarn.lock
+package-lock.json
+
+# for hardhat
+.env
+.env.local
+.env.development
+.env.production

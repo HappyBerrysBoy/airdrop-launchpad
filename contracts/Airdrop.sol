@@ -13,7 +13,7 @@ contract Airdrop is AccessControl, ReentrancyGuard {
         uint64 claimIndex;
     }
 
-    uint256 public constant PRECISION = 1e12;
+    uint256 public PRECISION;
 
     address public tokenAddress;
     uint256 public startTimestamp;
@@ -39,13 +39,15 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @param _endTimestamp 에어드랍 종료 시간
      * @param _tgePercent TGE 비율 (0 ~ 100)
      * @param _vestingCount tge 이후 클레임 횟수
+     * @param _precision 토큰의 decimal 값
      */
     constructor(
         address _tokenAddress,
         uint256 _startTimestamp,
         uint256 _endTimestamp,
         uint256 _tgePercent,
-        uint64 _vestingCount
+        uint64 _vestingCount,
+        uint256 _precision
     ) {
         require(_startTimestamp < _endTimestamp, "INVALID_TIMESTAMP");
         tokenAddress = _tokenAddress;
@@ -54,6 +56,7 @@ contract Airdrop is AccessControl, ReentrancyGuard {
         tgePercent = _tgePercent;
         vestingCount = _vestingCount;
         vestingTerm = (_endTimestamp - _startTimestamp) / (_vestingCount + 1);
+        PRECISION = _precision;
 
         _grantRole(ADMIN_ROLE, msg.sender);
     }
@@ -84,7 +87,11 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @notice 전체 에어드랍 데이터를 조회합니다.
      * @return data 전체 에어드랍 데이터
      */
-    function getAllAirdropData() public view returns (AirdropData[] memory data) {
+    function getAllAirdropData()
+        public
+        view
+        returns (AirdropData[] memory data)
+    {
         data = new AirdropData[](dataLength);
         for (uint256 i = 1; i <= dataLength; i++) {
             data[i - 1] = airdropData[i];
@@ -95,7 +102,11 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @notice 클레임 완료된 계정을 조회합니다.
      * @return data 클레임 완료된 계정 데이터
      */
-    function getFullyClaimedAccounts() public view returns (AirdropData[] memory data) {
+    function getFullyClaimedAccounts()
+        public
+        view
+        returns (AirdropData[] memory data)
+    {
         uint256 count = 0;
         for (uint256 i = 1; i <= dataLength; i++) {
             if (airdropData[i].claimedAmount == airdropData[i].amount) {
@@ -119,7 +130,9 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @param account 클레임 가능한 금액을 계산할 계정
      * @return claimAmount 클레임 가능한 금액
      */
-    function getClaimableAmount(address account) public view returns (uint256 claimAmount) {
+    function getClaimableAmount(
+        address account
+    ) public view returns (uint256 claimAmount) {
         uint256 index = airdropIndex[account];
         require(isValidAirdropId(index), "NO_AIRDROP_DATA");
 
@@ -132,8 +145,22 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @return claimIndex 클레임 인덱스
      * @return claimAmount 클레임 가능한 금액
      */
-    function getClaimAmount(uint256 index) internal view returns (uint64 claimIndex, uint256 claimAmount) {
+    function getClaimAmount(
+        uint256 index
+    ) internal view returns (uint64 claimIndex, uint256 claimAmount) {
         AirdropData memory airdrop = airdropData[index];
+
+        // If vestingCount is 0, it means 100% TGE with no vesting
+        if (vestingCount == 0) {
+            // Only allow claim if not already claimed
+            if (airdrop.claimedAmount == 0) {
+                claimAmount = airdrop.amount;
+            } else {
+                claimAmount = 0;
+            }
+            claimIndex = 0;
+            return (claimIndex, claimAmount);
+        }
 
         /*
         vestingCount는 tge 이후 보상 횟수이므로, 에어드랍 전체 기간을 vestingCount + 1로 나누어야 합니다.
@@ -152,19 +179,27 @@ contract Airdrop is AccessControl, ReentrancyGuard {
         claimIndex = uint64(term / vestingTerm);
 
         uint256 claimableIndex = claimIndex - airdrop.claimIndex;
-        uint256 vestingAmountPerTerm = (airdrop.amount * PRECISION * (100 - tgePercent)) / 100 / vestingCount;
+        uint256 vestingAmountPerTerm = (airdrop.amount *
+            PRECISION *
+            (100 - tgePercent)) /
+            100 /
+            vestingCount;
         claimAmount = (vestingAmountPerTerm * claimableIndex) / PRECISION;
 
         // TGE를 클레임하지 않은 경우, TGE 금액 추가
         if (airdrop.claimIndex == 0 && airdrop.claimedAmount == 0) {
-            uint256 tgeAmountX12 = (airdrop.amount * PRECISION * tgePercent) / 100;
+            uint256 tgeAmountX12 = (airdrop.amount * PRECISION * tgePercent) /
+                100;
             claimAmount += tgeAmountX12 / PRECISION;
         }
 
         // 마지막 클레임 구간인 경우, 남은 금액 전부를 전송
-        if (claimIndex == vestingCount) {
-            uint256 remain = airdrop.amount - airdrop.claimedAmount;
-            claimAmount = remain;
+        // 또는 현재 클레임 가능 수량과 클레임 된 수량의 합이 총 에어드랍 금액을 초과하는 경우, 남은 금액 전부를 전송(Endtime이 변경되면서 발생할 가능성이 있음)
+        if (
+            claimIndex == vestingCount ||
+            airdrop.claimedAmount + claimAmount > airdrop.amount
+        ) {
+            claimAmount = airdrop.amount - airdrop.claimedAmount;
         }
     }
 
@@ -202,7 +237,11 @@ contract Airdrop is AccessControl, ReentrancyGuard {
     function getAirdropData()
         public
         view
-        returns (uint256 totalAmount, uint256 claimedAmount, uint256 claimableAmount)
+        returns (
+            uint256 totalAmount,
+            uint256 claimedAmount,
+            uint256 claimableAmount
+        )
     {
         return getAirdropDataByAddress(msg.sender);
     }
@@ -216,7 +255,15 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      */
     function getAirdropDataByAddress(
         address _address
-    ) public view returns (uint256 totalAmount, uint256 claimedAmount, uint256 claimableAmount) {
+    )
+        public
+        view
+        returns (
+            uint256 totalAmount,
+            uint256 claimedAmount,
+            uint256 claimableAmount
+        )
+    {
         uint256 index = airdropIndex[_address];
         require(isValidAirdropId(index), "NO_AIRDROP_DATA");
 
@@ -232,14 +279,22 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @param _account 조회할 계정 주소
      * @param _amount 에어드랍 개수
      */
-    function insertAirdropData(address _account, uint256 _amount) public onlyRole(ADMIN_ROLE) {
+    function insertAirdropData(
+        address _account,
+        uint256 _amount
+    ) public onlyRole(ADMIN_ROLE) {
         uint256 index = airdropIndex[_account];
         require(index == 0, "DUPLICATED_DATA");
 
         dataLength++;
         airdropIndex[_account] = dataLength;
 
-        airdropData[dataLength] = AirdropData({account: _account, amount: _amount, claimedAmount: 0, claimIndex: 0});
+        airdropData[dataLength] = AirdropData({
+            account: _account,
+            amount: _amount,
+            claimedAmount: 0,
+            claimIndex: 0
+        });
 
         totalAirdropAmount += _amount;
     }
@@ -249,7 +304,10 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @param _accounts[] 조회할 계정 주소
      * @param _amounts[] 에어드랍 개수
      */
-    function batchInsertAirdropData(address[] memory _accounts, uint256[] memory _amounts) public onlyRole(ADMIN_ROLE) {
+    function batchInsertAirdropData(
+        address[] memory _accounts,
+        uint256[] memory _amounts
+    ) public onlyRole(ADMIN_ROLE) {
         require(_accounts.length == _amounts.length, "INVALID_INPUT_DATA");
 
         for (uint256 i = 0; i < _accounts.length; i++) {
@@ -276,7 +334,10 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @param _address 계정 주소
      * @param _airdropData 에어드랍 데이터
      */
-    function updateAirdropData(address _address, AirdropData memory _airdropData) public onlyRole(ADMIN_ROLE) {
+    function updateAirdropData(
+        address _address,
+        AirdropData memory _airdropData
+    ) public onlyRole(ADMIN_ROLE) {
         uint256 index = airdropIndex[_address];
         require(index > 0, "NO_AIRDROP_DATA");
 
@@ -307,7 +368,9 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @notice 에어드랍 시작 시간을 업데이트합니다. 컨트랙트 owner만 호출 가능.
      * @param _startTimestamp 새로운 에어드랍 시작 시간
      */
-    function updateStartTimestamp(uint256 _startTimestamp) public onlyRole(ADMIN_ROLE) {
+    function updateStartTimestamp(
+        uint256 _startTimestamp
+    ) public onlyRole(ADMIN_ROLE) {
         startTimestamp = _startTimestamp;
         vestingTerm = (endTimestamp - startTimestamp) / (vestingCount + 1);
         emit AirdropStartTimeUpdated(_startTimestamp);
@@ -317,7 +380,9 @@ contract Airdrop is AccessControl, ReentrancyGuard {
      * @notice 에어드랍 종료 시간을 업데이트합니다. 컨트랙트 owner만 호출 가능.
      * @param _endTimestamp 새로운 에어드랍 종료 시간
      */
-    function updateEndTimestamp(uint256 _endTimestamp) public onlyRole(ADMIN_ROLE) {
+    function updateEndTimestamp(
+        uint256 _endTimestamp
+    ) public onlyRole(ADMIN_ROLE) {
         endTimestamp = _endTimestamp;
         vestingTerm = (endTimestamp - startTimestamp) / (vestingCount + 1);
         emit AirdropEndTimeUpdated(_endTimestamp);
