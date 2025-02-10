@@ -45,7 +45,10 @@ contract ChuruLaunchpad is AccessControl, ReentrancyGuard {
         emit Enrolled(_amount, _claimRatio);
     }
 
-    function updatePeriod(uint64 _startBlock, uint64 _endBlock) external onlyRole(ADMIN_ROLE) {
+    function updatePeriod(
+        uint64 _startBlock,
+        uint64 _endBlock
+    ) external onlyRole(ADMIN_ROLE) {
         require(_endBlock > _startBlock, "Launchpad: invalid period");
 
         startBlock = _startBlock;
@@ -54,13 +57,17 @@ contract ChuruLaunchpad is AccessControl, ReentrancyGuard {
         emit PeriodUpdated(_startBlock, _endBlock);
     }
 
-    function updateChuruPerAce(uint256 _claimRatio) external onlyRole(ADMIN_ROLE) {
+    function updateChuruPerAce(
+        uint256 _claimRatio
+    ) external onlyRole(ADMIN_ROLE) {
         claimRatio = _claimRatio;
 
         emit ClaimRatioUpdated(_claimRatio);
     }
 
-    function updateLaunchpadAmount(uint256 _amount) external onlyRole(ADMIN_ROLE) {
+    function updateLaunchpadAmount(
+        uint256 _amount
+    ) external onlyRole(ADMIN_ROLE) {
         if (amount > _amount) {
             uint256 diff = amount - _amount;
             IERC20(churu).transfer(msg.sender, diff);

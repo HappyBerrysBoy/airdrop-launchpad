@@ -16,3 +16,4 @@ export const airdropToken = "0x5D0a0E44e4c8d7D95029898ecD503557bf35D626"; // HSW
 // export const airdropAddress = "0xAC6995553318Dc01fb6D7759fE8Eb5e584820Fff";
 export const airdropAddress = "0x216e959a74f0482ea76b30da777cb730534f85de";
 export const airdropReceiver = "0x31b1dA5926A0159B0C369e6F15756E9C666011e7";
+export const spinnerAddress = "0x469e4F05C34b1Dd46e5Ea6F178362Bb0b71D2d84";

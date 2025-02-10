@@ -15,6 +15,7 @@ require("dotenv").config();
 require("./tasks/01-airdrop-factory");
 require("./tasks/02-airdrop-contract");
 require("./tasks/03-airdrop-user");
+require("./tasks/04-play-spinner");
 
 const {
   ETHERSCAN_KEY,
@@ -39,7 +40,8 @@ const config: HardhatUserConfig = {
   networks: {
     kairos: {
       chainId: 1001,
-      url: "https://public-en-kairos.node.kaia.io",
+      url: "https://rpc.ankr.com/klaytn_testnet",
+      // url: "https://public-en-kairos.node.kaia.io",
       gasPrice: 25000000000,
       accounts:
         DEPLOYER_PRIVATE_KEY !== undefined

@@ -74,6 +74,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AccessControl__factory>;
     getContractFactory(
+      name: "Spinner",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Spinner__factory>;
+    getContractFactory(
       name: "TestToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TestToken__factory>;
@@ -154,6 +158,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.AccessControl>;
     getContractAt(
+      name: "Spinner",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Spinner>;
+    getContractAt(
       name: "TestToken",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -220,6 +229,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AccessControl>;
     deployContract(
+      name: "Spinner",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Spinner>;
+    deployContract(
       name: "TestToken",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TestToken>;
@@ -299,6 +312,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AccessControl>;
+    deployContract(
+      name: "Spinner",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Spinner>;
     deployContract(
       name: "TestToken",
       args: any[],

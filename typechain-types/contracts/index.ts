@@ -9,4 +9,5 @@ export type { AirdropLock } from "./AirdropLock";
 export type { ChuruLaunchpad } from "./ChuruLaunchpad";
 export type { ERC20BurnableToken } from "./ERC20BurnableToken";
 export type { ERC20Token } from "./ERC20Token";
+export type { Spinner } from "./Spinner";
 export type { TestToken } from "./TestToken";
