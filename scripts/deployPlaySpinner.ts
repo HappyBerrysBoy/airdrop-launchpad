@@ -3,6 +3,8 @@ import { ethers } from "hardhat";
 async function main() {
   // CONSTANTS
   const TOTAL_SEGMENTS = 8;
+  const COUNT_PER_KAIA = 10;
+  const FEE_RELAYER = "0xDD7f479F611920CFEae0Db776a3fcB6804f66A1A";
 
   // Deployer account info
   const [deployer] = await ethers.getSigners();
@@ -15,7 +17,12 @@ async function main() {
 
   // Deploy Spinner contract
   const Spinner = await ethers.getContractFactory("Spinner");
-  const spinner = await Spinner.deploy(TOTAL_SEGMENTS);
+  // const spinner = await Spinner.deploy(TOTAL_SEGMENTS);
+  const spinner = await Spinner.deploy(
+    TOTAL_SEGMENTS,
+    FEE_RELAYER,
+    COUNT_PER_KAIA
+  );
   await spinner.waitForDeployment();
 
   console.log(`Spinner deployed to: ${spinner.target}`);

@@ -4,13 +4,10 @@ pragma solidity 0.8.24;
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./lib/AccessControl.sol";
 
-contract Spinner is AccessControl, ReentrancyGuard {
+contract SpinnerNew is AccessControl, ReentrancyGuard {
     // Constants
-    uint256 public constant PRECISION = 1e18; // KAIA decimals
-    uint256 public constant MAX_PROBABILITY = 100000000;
-    uint256 public freeSpinPerDay = 100;
-    uint256 public rechargeBlockInterval = 86400;
-
+    uint256 public constant PRECISION = 1e18;
+    uint256 public constant MAX_PROBABILITY = 10000000;
     uint16 public totalSegments; // Total number of segments in wheel
     address public feeRelayer; // Relayer address for fee collection
     uint256 public countPerKaia; // Number of spins per kaia
@@ -18,13 +15,11 @@ contract Spinner is AccessControl, ReentrancyGuard {
     // State variables
     mapping(uint16 => uint64) public segmentAmounts; // Amount allocated to each segment
     mapping(uint16 => uint64) public segmentRemaining; // Remaining amount for each segment
-    mapping(uint16 => uint64) public segmentProbabilities; // Probability for each segment (in basis points, 1-100000000)
+    mapping(uint16 => uint64) public segmentProbabilities; // Probability for each segment (in basis points, 1-10000000)
     uint256 public totalSpins; // Total number of spins performed
-    uint256 public startBlock; // Block number when spinning starts
-    uint256 public endBlock; // Block number when spinning ends
+    bool public isActive;
 
     // User spin tracking
-    mapping(address => uint256) public lastRechargeBlock; // Block number when user requested recharge
     mapping(address => uint256) public userSpinsAvailable; // Number of spins available for user
     mapping(address => uint64) public userSpinCount; // Number of spins per user
     mapping(address => mapping(uint256 => uint256)) public userSegmentHits; // Number of hits per segment per user
@@ -37,9 +32,7 @@ contract Spinner is AccessControl, ReentrancyGuard {
         uint256 timestamp
     );
 
-    event RechargeSpins(address indexed user, uint256 blockNumber);
-
-    // event DepositKaia(address indexed user, uint256 amount);
+    event DepositKaia(address indexed user, uint256 amount);
 
     constructor(
         uint16 _totalSegments,
@@ -47,25 +40,16 @@ contract Spinner is AccessControl, ReentrancyGuard {
         uint256 _countPerKaia
     ) {
         _grantRole(ADMIN_ROLE, msg.sender);
+        isActive = false;
         totalSegments = uint16(_totalSegments);
         feeRelayer = _feeRelayer;
         countPerKaia = _countPerKaia;
-        startBlock = 0;
-        endBlock = 0;
     }
 
-    /**
-     * @notice Set the fee relayer address
-     * @param _feeRelayer The address of the fee relayer
-     */
     function setFeeRelayer(address _feeRelayer) external onlyRole(ADMIN_ROLE) {
         feeRelayer = _feeRelayer;
     }
 
-    /**
-     * @notice Set the number of spins per kaia
-     * @param _countPerKaia The number of spins per kaia
-     */
     function setCountPerKaia(
         uint256 _countPerKaia
     ) external onlyRole(ADMIN_ROLE) {
@@ -73,96 +57,31 @@ contract Spinner is AccessControl, ReentrancyGuard {
     }
 
     /**
-     * @notice Set the number of free spins per day
-     * @param _freeSpinsPerDay The number of free spins per day
+     * @notice Deposit kaia
+     * @dev kaia가 1 미만이면 revert
      */
-    function setFreeSpinsPerDay(
-        uint256 _freeSpinsPerDay
-    ) external onlyRole(ADMIN_ROLE) {
-        freeSpinPerDay = _freeSpinsPerDay;
+    function depositKaia() external payable {
+        // kaia가 1 미만이면 revert
+        require(msg.value >= 1, "Deposit amount must be greater than 0");
+
+        userSpinsAvailable[msg.sender] += uint256(countPerKaia * msg.value);
+
+        // 받은 수수료를 feeRelayer에 전송
+        payable(feeRelayer).transfer(msg.value);
+
+        emit DepositKaia(msg.sender, msg.value);
     }
 
-    /**
-     * @notice Set the recharge block interval
-     * @param _rechargeBlockInterval The interval in blocks between recharge
-     */
-    function setRechargeBlockInterval(
-        uint256 _rechargeBlockInterval
-    ) external onlyRole(ADMIN_ROLE) {
-        rechargeBlockInterval = _rechargeBlockInterval;
-    }
-
-    /**
-     * @notice Recharge user's free spins based on block interval
-     * @param user Address of the user to recharge spins for
-     */
-    function rechargeSpins(address user) public {
-        require(
-            msg.sender == user || hasRole(ADMIN_ROLE, msg.sender),
-            "Only user or admin can recharge spins"
-        );
-
-        // Get the number of intervals passed since last recharge
-        uint256 currentBlock = block.number;
-        uint256 blocksSinceLastRecharge = currentBlock -
-            lastRechargeBlock[user];
-
-        require(
-            blocksSinceLastRecharge >= rechargeBlockInterval,
-            "Not enough time has passed since last recharge"
-        );
-
-        userSpinsAvailable[user] = freeSpinPerDay;
-        lastRechargeBlock[user] = currentBlock;
-
-        emit RechargeSpins(user, currentBlock);
-    }
-
-    /**
-     * @notice Get the last recharge block for a user
-     * @param user Address of the user to get the last recharge block for
-     * @return lastRechargeBlock The last recharge block for the user
-     * @return currentBlock The current block height
-     */
-    function getLastRechargeBlock(
-        address user
-    ) external view returns (uint256, uint256) {
-        return (lastRechargeBlock[user], block.number);
-    }
-
-    /**
-     * @notice Get the number of spins available for a user
-     * @param user Address of the user to get the number of spins available for
-     * @return userSpinsAvailable The number of spins available for the user
-     */
     function getUserSpinsAvailable(
         address user
     ) external view returns (uint256) {
         return userSpinsAvailable[user];
     }
 
-    // /**
-    //  * @notice Deposit kaia
-    //  * @dev kaia가 1 미만이면 revert
-    //  */
-    // function depositKaia() external payable {
-    //     // kaia가 1 미만이면 revert
-    //     require(msg.value >= 1, "Deposit amount must be greater than 0");
-
-    //     userSpinsAvailable[msg.sender] += uint256(
-    //         (countPerKaia * msg.value) / PRECISION
-    //     );
-
-    //     // 받은 수수료를 feeRelayer에 전송
-    //     payable(feeRelayer).transfer(msg.value);
-
-    //     emit DepositKaia(msg.sender, msg.value);
-    // }
-
     /**
      * @notice Set amounts and probabilities for wheel segments
      * @param amounts Array of amounts for each segment
-     * @param probabilities Array of probabilities for each segment (1-100000000)
+     * @param probabilities Array of probabilities for each segment (1-10000000)
      */
     function setSegmentAmounts(
         uint64[] calldata amounts,
@@ -172,7 +91,7 @@ contract Spinner is AccessControl, ReentrancyGuard {
 
         require(
             probabilities[probabilities.length - 1] == MAX_PROBABILITY,
-            "Last probability must be 100000000"
+            "Last probability must be 10000000"
         );
 
         for (uint16 i = 0; i < amounts.length; i++) {
@@ -238,11 +157,8 @@ contract Spinner is AccessControl, ReentrancyGuard {
         totalSegments = _totalSegments;
     }
 
-    function isActive() public view returns (bool) {
-        return
-            startBlock != 0 &&
-            block.number >= startBlock &&
-            (endBlock == 0 || block.number <= endBlock);
+    function getActiveStatus() external view returns (bool) {
+        return isActive;
     }
 
     /**
@@ -255,8 +171,7 @@ contract Spinner is AccessControl, ReentrancyGuard {
         nonReentrant
         returns (uint16 segment, uint256 randomNumber)
     {
-        require(isActive(), "Spinner not active");
-        require(userSpinsAvailable[msg.sender] > 0, "No spins available");
+        require(isActive, "Spinner not active");
 
         bool validSegmentFound = false;
         uint256 attempts = 0;
@@ -305,30 +220,16 @@ contract Spinner is AccessControl, ReentrancyGuard {
         // Update user spin tracking
         userSpinCount[msg.sender]++;
         userSegmentHits[msg.sender][segment]++;
-        userSpinsAvailable[msg.sender]--;
 
         emit SpinResult(msg.sender, segment, randomNumber, block.timestamp);
     }
 
     /**
-     * @notice Set spinner block range
-     * @param _startBlock Block number when spinning starts
-     * @param _endBlock Block number when spinning ends (0 for no end)
+     * @notice Set spinner active status
+     * @param _isActive New active status
      */
-    function setBlockRange(
-        uint256 _startBlock,
-        uint256 _endBlock
-    ) external onlyRole(ADMIN_ROLE) {
-        require(
-            _startBlock >= block.number,
-            "Start block must be in the future"
-        );
-        require(
-            _endBlock == 0 || _endBlock > _startBlock,
-            "End block must be after start block"
-        );
-        startBlock = _startBlock;
-        endBlock = _endBlock;
+    function setActive(bool _isActive) external onlyRole(ADMIN_ROLE) {
+        isActive = _isActive;
     }
 
     // get user's spin count

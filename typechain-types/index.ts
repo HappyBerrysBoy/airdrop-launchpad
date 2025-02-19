@@ -38,5 +38,7 @@ export type { AccessControl } from "./contracts/lib/AccessControl";
 export { AccessControl__factory } from "./factories/contracts/lib/AccessControl__factory";
 export type { Spinner } from "./contracts/Spinner";
 export { Spinner__factory } from "./factories/contracts/Spinner__factory";
+export type { SpinnerNew } from "./contracts/SpinnerNew";
+export { SpinnerNew__factory } from "./factories/contracts/SpinnerNew__factory";
 export type { TestToken } from "./contracts/TestToken";
 export { TestToken__factory } from "./factories/contracts/TestToken__factory";

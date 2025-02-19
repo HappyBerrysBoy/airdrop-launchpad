@@ -54,6 +54,21 @@ const config: HardhatUserConfig = {
             ]
           : [],
     },
+    kaia: {
+      chainId: 8217,
+      url: "https://public-en.node.kaia.io",
+      gasPrice: 25000000000,
+      accounts:
+        DEPLOYER_PRIVATE_KEY !== undefined
+          ? [
+              DEPLOYER_PRIVATE_KEY,
+              AIRDROP_CLAIM_TEST_ACCOUNT_PRIVATE_KEY1!,
+              AIRDROP_CLAIM_TEST_ACCOUNT_PRIVATE_KEY2!,
+              AIRDROP_CLAIM_TEST_ACCOUNT_PRIVATE_KEY3!,
+              AIRDROP_CLAIM_TEST_ACCOUNT_PRIVATE_KEY4!,
+            ]
+          : [],
+    },
     cypress: {
       chainId: 8217,
       url: "https://public-en-cypress.klaytn.net",
@@ -112,6 +127,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://explorer-endurance.fusionist.io/api",
           browserURL: "https://explorer-endurance.fusionist.io",
+        },
+      },
+      {
+        network: "kaia",
+        chainId: 8217,
+        urls: {
+          apiURL: "https://explorer-kaia.fusionist.io/api",
+          browserURL: "https://public-en.node.kaia.io",
         },
       },
     ],

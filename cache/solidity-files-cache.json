@@ -577,8 +577,8 @@
       ]
     },
     "/Users/suncheolkwon/Documents/workspace/nodejs/airdrop-launchpad/contracts/Spinner.sol": {
-      "lastModificationDate": 1738937841423,
-      "contentHash": "7fae5b4e1efbeda34d772609b9b14de5",
+      "lastModificationDate": 1739449838623,
+      "contentHash": "f769b2ce7884cbc690120caa843ffe72",
       "sourceName": "contracts/Spinner.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -613,6 +613,45 @@
       ],
       "artifacts": [
         "Spinner"
+      ]
+    },
+    "/Users/suncheolkwon/Documents/workspace/nodejs/airdrop-launchpad/contracts/SpinnerNew.sol": {
+      "lastModificationDate": 1739284919550,
+      "contentHash": "a208d2ccced270b0e9d5e815adb6eed6",
+      "sourceName": "contracts/SpinnerNew.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "./lib/AccessControl.sol"
+      ],
+      "versionPragmas": [
+        "0.8.24"
+      ],
+      "artifacts": [
+        "SpinnerNew"
       ]
     }
   }

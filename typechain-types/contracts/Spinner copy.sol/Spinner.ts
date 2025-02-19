@@ -21,7 +21,7 @@ import type {
   TypedLogDescription,
   TypedListener,
   TypedContractMethod,
-} from "../common";
+} from "../../common";
 
 export interface SpinnerInterface extends Interface {
   getFunction(
@@ -30,10 +30,9 @@ export interface SpinnerInterface extends Interface {
       | "MAX_PROBABILITY"
       | "PRECISION"
       | "countPerKaia"
-      | "endBlock"
+      | "depositKaia"
       | "feeRelayer"
-      | "freeSpinPerDay"
-      | "getLastRechargeBlock"
+      | "getActiveStatus"
       | "getProbabilities"
       | "getRemainingAmounts"
       | "getSegmentAmounts"
@@ -44,22 +43,16 @@ export interface SpinnerInterface extends Interface {
       | "grantRole"
       | "hasRole"
       | "isActive"
-      | "lastRechargeBlock"
-      | "rechargeBlockInterval"
-      | "rechargeSpins"
       | "revokeRole"
       | "segmentAmounts"
       | "segmentProbabilities"
       | "segmentRemaining"
-      | "setBlockRange"
+      | "setActive"
       | "setCountPerKaia"
       | "setFeeRelayer"
-      | "setFreeSpinsPerDay"
-      | "setRechargeBlockInterval"
       | "setSegmentAmounts"
       | "setTotalSegments"
       | "spin"
-      | "startBlock"
       | "totalSegments"
       | "totalSpins"
       | "userSegmentHits"
@@ -69,7 +62,7 @@ export interface SpinnerInterface extends Interface {
 
   getEvent(
     nameOrSignatureOrTopic:
-      | "RechargeSpins"
+      | "DepositKaia"
       | "RoleGranted"
       | "RoleRevoked"
       | "SpinResult"
@@ -88,18 +81,17 @@ export interface SpinnerInterface extends Interface {
     functionFragment: "countPerKaia",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "endBlock", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "depositKaia",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "feeRelayer",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "freeSpinPerDay",
+    functionFragment: "getActiveStatus",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getLastRechargeBlock",
-    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getProbabilities",
@@ -139,18 +131,6 @@ export interface SpinnerInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "isActive", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "lastRechargeBlock",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "rechargeBlockInterval",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "rechargeSpins",
-    values: [AddressLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "revokeRole",
     values: [BytesLike, AddressLike]
   ): string;
@@ -166,10 +146,7 @@ export interface SpinnerInterface extends Interface {
     functionFragment: "segmentRemaining",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "setBlockRange",
-    values: [BigNumberish, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "setActive", values: [boolean]): string;
   encodeFunctionData(
     functionFragment: "setCountPerKaia",
     values: [BigNumberish]
@@ -177,14 +154,6 @@ export interface SpinnerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "setFeeRelayer",
     values: [AddressLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setFreeSpinsPerDay",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setRechargeBlockInterval",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setSegmentAmounts",
@@ -195,10 +164,6 @@ export interface SpinnerInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "spin", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "startBlock",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "totalSegments",
     values?: undefined
@@ -230,14 +195,13 @@ export interface SpinnerInterface extends Interface {
     functionFragment: "countPerKaia",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "endBlock", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "feeRelayer", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "freeSpinPerDay",
+    functionFragment: "depositKaia",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "feeRelayer", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getLastRechargeBlock",
+    functionFragment: "getActiveStatus",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -271,18 +235,6 @@ export interface SpinnerInterface extends Interface {
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isActive", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "lastRechargeBlock",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "rechargeBlockInterval",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "rechargeSpins",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "segmentAmounts",
@@ -296,24 +248,13 @@ export interface SpinnerInterface extends Interface {
     functionFragment: "segmentRemaining",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setBlockRange",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "setActive", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setCountPerKaia",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setFeeRelayer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setFreeSpinsPerDay",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setRechargeBlockInterval",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -325,7 +266,6 @@ export interface SpinnerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "spin", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "startBlock", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSegments",
     data: BytesLike
@@ -345,12 +285,12 @@ export interface SpinnerInterface extends Interface {
   ): Result;
 }
 
-export namespace RechargeSpinsEvent {
-  export type InputTuple = [user: AddressLike, blockNumber: BigNumberish];
-  export type OutputTuple = [user: string, blockNumber: bigint];
+export namespace DepositKaiaEvent {
+  export type InputTuple = [user: AddressLike, amount: BigNumberish];
+  export type OutputTuple = [user: string, amount: bigint];
   export interface OutputObject {
     user: string;
-    blockNumber: bigint;
+    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -470,17 +410,11 @@ export interface Spinner extends BaseContract {
 
   countPerKaia: TypedContractMethod<[], [bigint], "view">;
 
-  endBlock: TypedContractMethod<[], [bigint], "view">;
+  depositKaia: TypedContractMethod<[], [void], "payable">;
 
   feeRelayer: TypedContractMethod<[], [string], "view">;
 
-  freeSpinPerDay: TypedContractMethod<[], [bigint], "view">;
-
-  getLastRechargeBlock: TypedContractMethod<
-    [user: AddressLike],
-    [[bigint, bigint]],
-    "view"
-  >;
+  getActiveStatus: TypedContractMethod<[], [boolean], "view">;
 
   getProbabilities: TypedContractMethod<[], [bigint[]], "view">;
 
@@ -522,12 +456,6 @@ export interface Spinner extends BaseContract {
 
   isActive: TypedContractMethod<[], [boolean], "view">;
 
-  lastRechargeBlock: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
-
-  rechargeBlockInterval: TypedContractMethod<[], [bigint], "view">;
-
-  rechargeSpins: TypedContractMethod<[user: AddressLike], [void], "nonpayable">;
-
   revokeRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
     [void],
@@ -544,11 +472,7 @@ export interface Spinner extends BaseContract {
 
   segmentRemaining: TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
 
-  setBlockRange: TypedContractMethod<
-    [_startBlock: BigNumberish, _endBlock: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+  setActive: TypedContractMethod<[_isActive: boolean], [void], "nonpayable">;
 
   setCountPerKaia: TypedContractMethod<
     [_countPerKaia: BigNumberish],
@@ -558,18 +482,6 @@ export interface Spinner extends BaseContract {
 
   setFeeRelayer: TypedContractMethod<
     [_feeRelayer: AddressLike],
-    [void],
-    "nonpayable"
-  >;
-
-  setFreeSpinsPerDay: TypedContractMethod<
-    [_freeSpinsPerDay: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-
-  setRechargeBlockInterval: TypedContractMethod<
-    [_rechargeBlockInterval: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -591,8 +503,6 @@ export interface Spinner extends BaseContract {
     [[bigint, bigint] & { segment: bigint; randomNumber: bigint }],
     "nonpayable"
   >;
-
-  startBlock: TypedContractMethod<[], [bigint], "view">;
 
   totalSegments: TypedContractMethod<[], [bigint], "view">;
 
@@ -629,17 +539,14 @@ export interface Spinner extends BaseContract {
     nameOrSignature: "countPerKaia"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
-    nameOrSignature: "endBlock"
-  ): TypedContractMethod<[], [bigint], "view">;
+    nameOrSignature: "depositKaia"
+  ): TypedContractMethod<[], [void], "payable">;
   getFunction(
     nameOrSignature: "feeRelayer"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "freeSpinPerDay"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "getLastRechargeBlock"
-  ): TypedContractMethod<[user: AddressLike], [[bigint, bigint]], "view">;
+    nameOrSignature: "getActiveStatus"
+  ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
     nameOrSignature: "getProbabilities"
   ): TypedContractMethod<[], [bigint[]], "view">;
@@ -683,15 +590,6 @@ export interface Spinner extends BaseContract {
     nameOrSignature: "isActive"
   ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
-    nameOrSignature: "lastRechargeBlock"
-  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "rechargeBlockInterval"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "rechargeSpins"
-  ): TypedContractMethod<[user: AddressLike], [void], "nonpayable">;
-  getFunction(
     nameOrSignature: "revokeRole"
   ): TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -708,32 +606,14 @@ export interface Spinner extends BaseContract {
     nameOrSignature: "segmentRemaining"
   ): TypedContractMethod<[arg0: BigNumberish], [bigint], "view">;
   getFunction(
-    nameOrSignature: "setBlockRange"
-  ): TypedContractMethod<
-    [_startBlock: BigNumberish, _endBlock: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+    nameOrSignature: "setActive"
+  ): TypedContractMethod<[_isActive: boolean], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "setCountPerKaia"
   ): TypedContractMethod<[_countPerKaia: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "setFeeRelayer"
   ): TypedContractMethod<[_feeRelayer: AddressLike], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setFreeSpinsPerDay"
-  ): TypedContractMethod<
-    [_freeSpinsPerDay: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "setRechargeBlockInterval"
-  ): TypedContractMethod<
-    [_rechargeBlockInterval: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
   getFunction(
     nameOrSignature: "setSegmentAmounts"
   ): TypedContractMethod<
@@ -751,9 +631,6 @@ export interface Spinner extends BaseContract {
     [[bigint, bigint] & { segment: bigint; randomNumber: bigint }],
     "nonpayable"
   >;
-  getFunction(
-    nameOrSignature: "startBlock"
-  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "totalSegments"
   ): TypedContractMethod<[], [bigint], "view">;
@@ -775,11 +652,11 @@ export interface Spinner extends BaseContract {
   ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
 
   getEvent(
-    key: "RechargeSpins"
+    key: "DepositKaia"
   ): TypedContractEvent<
-    RechargeSpinsEvent.InputTuple,
-    RechargeSpinsEvent.OutputTuple,
-    RechargeSpinsEvent.OutputObject
+    DepositKaiaEvent.InputTuple,
+    DepositKaiaEvent.OutputTuple,
+    DepositKaiaEvent.OutputObject
   >;
   getEvent(
     key: "RoleGranted"
@@ -804,15 +681,15 @@ export interface Spinner extends BaseContract {
   >;
 
   filters: {
-    "RechargeSpins(address,uint256)": TypedContractEvent<
-      RechargeSpinsEvent.InputTuple,
-      RechargeSpinsEvent.OutputTuple,
-      RechargeSpinsEvent.OutputObject
+    "DepositKaia(address,uint256)": TypedContractEvent<
+      DepositKaiaEvent.InputTuple,
+      DepositKaiaEvent.OutputTuple,
+      DepositKaiaEvent.OutputObject
     >;
-    RechargeSpins: TypedContractEvent<
-      RechargeSpinsEvent.InputTuple,
-      RechargeSpinsEvent.OutputTuple,
-      RechargeSpinsEvent.OutputObject
+    DepositKaia: TypedContractEvent<
+      DepositKaiaEvent.InputTuple,
+      DepositKaiaEvent.OutputTuple,
+      DepositKaiaEvent.OutputObject
     >;
 
     "RoleGranted(bytes32,address,address)": TypedContractEvent<

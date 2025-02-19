@@ -9,4 +9,5 @@ export { ChuruLaunchpad__factory } from "./ChuruLaunchpad__factory";
 export { ERC20BurnableToken__factory } from "./ERC20BurnableToken__factory";
 export { ERC20Token__factory } from "./ERC20Token__factory";
 export { Spinner__factory } from "./Spinner__factory";
+export { SpinnerNew__factory } from "./SpinnerNew__factory";
 export { TestToken__factory } from "./TestToken__factory";
