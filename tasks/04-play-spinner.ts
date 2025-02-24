@@ -121,17 +121,24 @@ task("set-segment-amounts", "Set segment amounts").setAction(async (_, hre) => {
   console.log("spinner address", spinner.target);
 
   const MAX_PROBABILITY = 100000000;
-  const amounts = [100, 1000, 30000, 3000000, 20000, 1800000, 2000000, 0]; // 1 token per segment
-  const probabilities = [
-    1000,
-    11000,
-    312000,
-    30312000,
-    30512000,
-    48512000,
-    68512000,
-    MAX_PROBABILITY,
-  ];
+  const amounts = [100, 1000, 30000, 3000000, 20000, 1800000, 2000000, 0]; // amount of reward per segment
+  // 0.001 + 0.01 + 0.3 + 30 + 0.2 + 18 + 20 + 31.489 = 100
+  const winPercent = [0.001, 0.01, 0.3, 30, 0.2, 18, 20, 31.489]; // 걸릴 확률 단위는 %
+
+  // MAX_PROBABILITY을 기준으로 확률을 계산
+  // 입력된 수치 / MAX_PROBABILITY * 100
+  const probabilities = [];
+  let sum = 0;
+  for (let i = 0; i < winPercent.length; i++) {
+    sum += winPercent[i];
+    if (i === winPercent.length - 1) {
+      probabilities.push(MAX_PROBABILITY);
+    } else {
+      probabilities.push(Math.floor((MAX_PROBABILITY * sum) / 100));
+    }
+  }
+
+  console.log("probabilities", sum, probabilities);
 
   const tx = await spinner.setSegmentAmounts(amounts, probabilities);
 

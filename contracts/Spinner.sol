@@ -112,7 +112,7 @@ contract Spinner is AccessControl, ReentrancyGuard {
             "Not enough time has passed since last recharge"
         );
 
-        userSpinsAvailable[user] = freeSpinPerDay;
+        userSpinsAvailable[user] += freeSpinPerDay;
         lastRechargeBlock[user] = currentBlock;
 
         emit RechargeSpins(user, currentBlock);

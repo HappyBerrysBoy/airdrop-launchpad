@@ -17,6 +17,6 @@ export const airdropToken = "0x5D0a0E44e4c8d7D95029898ecD503557bf35D626"; // HSW
 export const airdropAddress = "0x216e959a74f0482ea76b30da777cb730534f85de";
 export const airdropReceiver = "0x31b1dA5926A0159B0C369e6F15756E9C666011e7";
 // mainnet(kaia)
-export const spinnerAddress = "0x15d9ec8CA0Dd0e406d3ecDc3972d3BB2FD11F439";
+export const spinnerAddress = "0x5fdA0D864120BBcef08d2B7781B8812C8b1Aa656";
 // testnet(kairos)
-// export const spinnerAddress = "0x40e3b68d1F8a6B888E2A036F79d7F76314a4992e";
+// export const spinnerAddress = "0x4C4044644C08ee68b37CD1F0B8b3aA1f3f2739E5";
