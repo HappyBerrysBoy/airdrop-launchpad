@@ -421,8 +421,8 @@
       ]
     },
     "/Users/suncheolkwon/Documents/workspace/nodejs/airdrop-launchpad/contracts/ERC20Token.sol": {
-      "lastModificationDate": 1737099707390,
-      "contentHash": "c7bd917a5eb2f45db94711fed63368ec",
+      "lastModificationDate": 1740401587300,
+      "contentHash": "9e2ea8f78a2047b323db11788ffc0de3",
       "sourceName": "contracts/ERC20Token.sol",
       "solcConfig": {
         "version": "0.8.24",

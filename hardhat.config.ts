@@ -38,6 +38,21 @@ const config: HardhatUserConfig = {
     ],
   },
   networks: {
+    bsc_testnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      chainId: 97,
+      accounts: [DEPLOYER_PRIVATE_KEY!],
+    },
+    hashkey_mainnet: {
+      url: "https://mainnet.hsk.xyz",
+      chainId: 177,
+      accounts: [DEPLOYER_PRIVATE_KEY!],
+    },
+    hashkey_testnet: {
+      url: "https://hashkeychain-testnet.alt.technology",
+      chainId: 133,
+      accounts: [DEPLOYER_PRIVATE_KEY!],
+    },
     kairos: {
       chainId: 1001,
       url: "https://rpc.ankr.com/klaytn_testnet",
